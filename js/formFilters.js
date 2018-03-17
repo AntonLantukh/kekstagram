@@ -3,31 +3,21 @@
 (function () {
 
   // Работа с формой
-  var filters = document.querySelector('.upload-effect-controls');
   var imagePreview = document.querySelector('.effect-image-preview');
 
-  var buttonDec = document.querySelector('.upload-resize-controls-button-dec');
-  var buttonInc = document.querySelector('.upload-resize-controls-button-inc');
+  var scaleButtons = document.querySelectorAll('.upload-resize-controls-button');
+
+  var filtersContainer = document.querySelector('.upload-effect-controls');
   var scaleInput = document.querySelector('.upload-resize-controls-value');
 
   var scaleFull = document.querySelector('.upload-effect-level');
   var pinHandler = document.querySelector('.upload-effect-level-pin');
 
 
-  // Применение фото-фильтра к форме
-  filters.addEventListener('click', function () {
-    applyFilter(event);
-  });
+  window.initializeScale(scaleInput, scaleButtons, adjustScale);
 
-  // Событие уменьшения масштаба
-  buttonDec.addEventListener('click', function () {
-    increasePhoto();
-  });
+  window.initializeFilters(filtersContainer, applyFilter);
 
-  // Событие увеличения масштаба
-  buttonInc.addEventListener('click', function () {
-    decreasePhoto();
-  });
 
   // Работа с перетаскиванием пина
   pinHandler.addEventListener('mousedown', function (evt) {
@@ -62,36 +52,24 @@
 
   // Функция фото-фильтра
   function applyFilter(event) {
-    if (event.target.className === 'upload-effect-preview') {
-      imagePreview.className = 'effect-image-preview';
-      imagePreview.removeAttribute('style', 'filter');
-      var filter = event.target.parentNode.htmlFor;
-      var filterName = filter.replace('upload-effect-', '');
-      imagePreview.classList.add('effect-' + filterName);
+    imagePreview.className = 'effect-image-preview';
+    imagePreview.removeAttribute('style', 'filter');
+    var filter = event.target.parentNode.htmlFor;
+    var filterName = filter.replace('upload-effect-', '');
+    imagePreview.classList.add('effect-' + filterName);
 
-      if (imagePreview.classList.contains('effect-none')) {
-        scaleFull.setAttribute('style', 'display: none');
-      } else {
-        scaleFull.setAttribute('style', 'display: block');
-      }
+    if (imagePreview.classList.contains('effect-none')) {
+      scaleFull.setAttribute('style', 'display: none');
+    } else {
+      scaleFull.setAttribute('style', 'display: block');
     }
   }
 
-  // Функция увеличения изображения
-  function increasePhoto() {
-    if (scaleInput.value !== '25%') {
-      scaleInput.setAttribute('value', parseInt(scaleInput.value.replace('%', ''), 10) - 25 + '%');
-      var scaleValueDec = scaleInput.value.replace('%', '');
-      imagePreview.setAttribute('style', 'transform: scale(' + scaleValueDec / 100 + ')');
-    }
-  }
-
-  // Функция уменьшения изображения
-  function decreasePhoto() {
-    if (scaleInput.value !== '100%') {
-      scaleInput.setAttribute('value', parseInt(scaleInput.value.replace('%', ''), 10) + 25 + '%');
-      var scaleValueInc = scaleInput.value.replace('%', '');
-      imagePreview.setAttribute('style', 'transform: scale(' + scaleValueInc / 100 + ')');
+  // Колбэк для масштаба изображения
+  function adjustScale(prospectiveValue, direction) {
+    if (prospectiveValue >= 25 && prospectiveValue <= 100) {
+      scaleInput.setAttribute('value', parseInt(scaleInput.value.replace('%', ''), 10) + (direction * 25) + '%');
+      imagePreview.setAttribute('style', 'transform: scale(' + prospectiveValue / 100 + ')');
     }
   }
 

@@ -4,21 +4,18 @@
 
   window.backend.load(onSuccessCallback, window.backend.onErrorCallback);
 
-  // Функция рендера фото на странице
+
+  // Колбэк при успешной загрузке массива фотографий
   function onSuccessCallback(data) {
-    var posts = data;
-    var pictures = document.querySelector('.pictures');
-    var fragment = document.createDocumentFragment();
+    window.gallery = {
+      photosArray: data
+    };
 
-    for (var i = 0; i < 26; i++) {
+    var filters = document.querySelector('.filters');
 
-      var photoNode = window.data.createPicture(posts[i]);
-      photoNode.datashare = posts[i];
+    window.photos.preparePhotoNodes(data);
 
-      fragment.appendChild(photoNode);
-    }
+    filters.classList.remove('filters-inactive');
 
-    pictures.appendChild(fragment);
   }
-
 })();
